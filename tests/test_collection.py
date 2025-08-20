@@ -5,6 +5,7 @@ from pystac.extensions.projection import ProjectionExtension
 import pytest
 
 from stac_lake.collection import (
+    CollectionSchema,
     ProjectionRequirement,
     AssetRequirement,
     validate_item_against_requirements,
@@ -56,7 +57,7 @@ class TestProjectionRequirement:
         result = requirement.validate_item_against_requirement(item)
 
         assert not result.is_valid
-        assert result.message == "Item does not match required EPSG code."
+        assert result.message == "Item EPSG is 3786, expected 4326"
 
 
 class TestAssetRequirement:
@@ -101,6 +102,38 @@ class TestAssetRequirement:
         )
 
 
+def test_collection_schema_serialization():
+    pystac_collection = pystac.Collection(
+        id="test-collection",
+        description="A test collection",
+        extent=pystac.Extent(
+            spatial=pystac.SpatialExtent([[10, 10, 20, 20]]),
+            temporal=pystac.TemporalExtent(
+                [[datetime.datetime(2020, 1, 1), datetime.datetime(2020, 1, 2)]]
+            ),
+        ),
+    )
+    item_requirements = [
+        ProjectionRequirement(epsg=4326),
+    ]
+
+    collection = CollectionSchema(
+        stac_collection=pystac_collection,
+        item_requirements=item_requirements,
+    )
+
+    collection_dict = collection.to_dict()
+
+    assert collection_dict["stac_collection"]["id"] == "test-collection"
+    assert collection_dict["item_requirements"][0]["type"] == "ProjectionRequirement"
+    assert collection_dict["item_requirements"][0]["epsg"] == 4326
+
+    collection_from_dict = CollectionSchema.from_dict(collection_dict)
+
+    assert collection_from_dict.stac_collection.id == "test-collection"
+    assert isinstance(collection_from_dict.item_requirements[0], ProjectionRequirement)
+
+
 def test_validate_item_against_requirements(base_item):
     item = base_item
     item.add_asset(
@@ -118,7 +151,7 @@ def test_validate_item_against_requirements(base_item):
     result = validate_item_against_requirements(item, requirements)
 
     assert not result.is_valid
-    assert "Item does not match required EPSG code." in result.message
+    assert "Item EPSG is 3786, expected 4326" in result.message
     assert (
         "Asset 'test_asset' does not match required media type: image/jpeg"
         in result.message
