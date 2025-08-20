@@ -220,6 +220,9 @@ class CollectionSchema:
             item=item, requirements=self.item_requirements
         )
 
+    def get_id(self) -> str:
+        return self.stac_collection.id
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "stac_collection": self.stac_collection.to_dict(),
