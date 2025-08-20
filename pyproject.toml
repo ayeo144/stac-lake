@@ -1,5 +1,5 @@
 [project]
-name = "stac-lake"
+name = "staclake"
 version = "0.1.0"
 description = "STAC-powered data lake for geospatial rasters."
 readme = "README.md"

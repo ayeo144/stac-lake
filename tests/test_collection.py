@@ -4,7 +4,7 @@ import pystac
 from pystac.extensions.projection import ProjectionExtension
 import pytest
 
-from stac_lake.collection import (
+from staclake.collection import (
     CollectionSchema,
     ProjectionRequirement,
     AssetRequirement,
