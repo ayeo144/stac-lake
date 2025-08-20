@@ -1,10 +1,8 @@
-from dataclasses import dataclass
 from typing import Dict, Any, List
 
 from staclake.collection import CollectionSchema
 
 
-@dataclass
 class CollectionSchemaRegistry:
     """
     Registry of CollectionSchemas.
