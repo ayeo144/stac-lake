@@ -29,8 +29,8 @@ jobs:
 
       - name: Run ruff linting
         run: |
-          uv run ruff check stac_lake/ tests/
-          uv run ruff format --check stac_lake/ tests/
+          uv run ruff check --exclude=notebooks/ .
+          uv run ruff format --check --exclude=notebooks/ .
 
       - name: Run pytest
         run: |
